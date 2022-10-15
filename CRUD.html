@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        label{display: inline-block; width: 80px;}
+        input, select{width: 120px;}
+    </style>
+</head>
+<body>
+    <label>Name</label> <input type="text" id="Namebox"> <br><br>
+    <label>RollNo</label> <input type="text" id="Rollbox"> <br><br>
+    <label>Section</label> <input type="text" id="Secbox"> <br><br>
+    <label>Gender</label>
+    <select id="Genbox">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+    <hr>
+    <button id="Insbtn">INSERT</button>
+    <button id="Selbtn">SELECT</button>
+    <button id="Updbtn">UPDATE</button>
+    <button id="Delbtn">DELETE</button>
+    <!--------------------IMPORTS + CONFIGURATION--------------------------------->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.11.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCbSCbuZ0jSoGIdUSzaPjy37WvtgButUlI",
+          authDomain: "temp-aa9c1.firebaseapp.com",
+          projectId: "temp-aa9c1",
+          storageBucket: "temp-aa9c1.appspot.com",
+          messagingSenderId: "1087988840369",
+          appId: "1:1087988840369:web:cb5d70f4112648d9a9af90"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        import {getDatabase, get, ref, set, child, update, remove}
+        from "https://www.gstatic.com/firebasejs/9.11.0/firebase-database.js";
+
+        const db = getDatabase();
+
+        //-------------------------------------References-----------------------------
+        
+        let nameBox = document.getElementById("Namebox");
+        let rollBox = document.getElementById("Rollbox");
+        let secBox = document.getElementById("Secbox");
+        let genBox = document.getElementById("Genbox");
+
+        let insBtn = document.getElementById("Insbtn");
+        let selBtn = document.getElementById("Selbtn");
+        let updBtn = document.getElementById("Updbtn");
+        let delBtn = document.getElementById("Delbtn");
+
+        //------------------------------INSERT DATA FUNCTION-------------------------
+        
+        function insertData(){
+            set(ref(db, "TempDatabase/"+ rollBox.value),{
+                NameOfStd : nameBox.value,
+                RollNo: rollBox.value,
+                Section: secBox.value,
+                Gender: genBox.value
+            })
+            .then(()=>{
+                alert("data stored successfully");
+            })
+            .catch((error)=>{
+                alert("unsuccessful, error"+error);
+            });
+        }
+
+        //----------------------------SELECT DATA FUNCTION------------------------------
+
+        function selectData(){
+            const dbref = ref(db);
+
+            get(child(dbref, "TempDatabase/"+ rollBox.value))
+            .then((snapchot)=>{
+                if(snapchot.exists()){
+                    nameBox.value = snapchot.val().NameOfStd;
+                    secBox.value = snapchot.val().Section;
+                    genBox.value = snapchot.val().Gender;
+                }
+                else{
+                    alert("No data found");
+                }
+            })
+            .catch((error)=>{
+                alert("unsuccessful, error"+error);
+            })
+        }
+
+        //---------------------------------DATA DATA FUNCTION---------------------------
+
+        function updateData(){
+            update(ref(db, "TempDatabase/"+rollBox.value),{
+                NameOfStd : nameBox.value,
+                Section: secBox.value,
+                Gender: genBox.value
+            })
+            .then(()=>{
+                alert("data updated successfully");
+            })
+            .catch((error)=>{
+                alert("unsuccessful, error"+error);
+            })
+        }
+
+        //---------------------------------DELETE DATA FUNCTION---------------------------
+
+        function deleteData(){
+            remove(ref(db, "TempDatabase/"+ rollBox.value))
+            .then(()=>{
+                alert("data removed successfully");
+            })
+            .catch((error)=>{
+                alert("unsuccessful, error"+error);
+            })
+        }
+
+        //--------------------------------Assign Events To Btns------------------------
+
+        insBtn.addEventListener('click', insertData);
+        selBtn.addEventListener('click', selectData);
+        updBtn.addEventListener('click', updateData);
+        delBtn.addEventListener('click', deleteData);
+      </script>
+</body>
+</html>
